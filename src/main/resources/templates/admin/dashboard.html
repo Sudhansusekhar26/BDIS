@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Admin Master Command Center')}"></head>
+<body class="bg-light">
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<main class="py-4">
+    <div class="container">
+        <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+        <!-- Master Title Card -->
+        <div class="card bdis-card border-0 shadow-sm p-4 mb-4 bg-white">
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="bg-dark text-white p-3 rounded-circle fs-3"><i class="bi bi-shield-lock-fill text-danger"></i></div>
+                    <div>
+                        <h4 class="fw-bold mb-0 text-dark">Central Transfusion Administration Center</h4>
+                        <p class="text-muted small mb-0">Statewide real-time analytics, hospital verification, emergency reallocation, and audit governance.</p>
+                    </div>
+                </div>
+                <div class="d-flex gap-2">
+                    <a th:href="@{/admin/hospitals}" class="btn btn-outline-danger fw-semibold">
+                        <i class="bi bi-check2-circle me-1"></i> Verify Hospitals (<span th:text="${stats.pendingHospitalVerifications}">0</span>)
+                    </a>
+                    <a th:href="@{/admin/inventory}" class="btn btn-danger fw-bold">
+                        <i class="bi bi-sliders me-1"></i> Emergency Stock Override
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytical Stat Cards Grid -->
+        <div class="row g-3 mb-4">
+            <div class="col-sm-6 col-lg-3">
+                <div class="stat-widget d-flex align-items-center justify-content-between shadow-sm">
+                    <div>
+                        <div class="stat-label">Total Stock In Grid</div>
+                        <div class="stat-value text-danger" th:text="${stats.totalAvailableUnits}">540</div>
+                    </div>
+                    <div class="stat-icon bg-danger bg-opacity-10 text-danger"><i class="bi bi-droplet-half"></i></div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-lg-3">
+                <div class="stat-widget d-flex align-items-center justify-content-between shadow-sm">
+                    <div>
+                        <div class="stat-label">Verified Blood Banks</div>
+                        <div class="stat-value text-primary" th:text="${stats.totalHospitals}">12</div>
+                    </div>
+                    <div class="stat-icon bg-primary bg-opacity-10 text-primary"><i class="bi bi-hospital"></i></div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-lg-3">
+                <div class="stat-widget d-flex align-items-center justify-content-between shadow-sm">
+                    <div>
+                        <div class="stat-label">Active Transits</div>
+                        <div class="stat-value text-warning" th:text="${stats.activeDispatches}">4</div>
+                    </div>
+                    <div class="stat-icon bg-warning bg-opacity-10 text-warning"><i class="bi bi-truck"></i></div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-lg-3">
+                <div class="stat-widget d-flex align-items-center justify-content-between shadow-sm">
+                    <div>
+                        <div class="stat-label">Registered Donors/Users</div>
+                        <div class="stat-value text-success" th:text="${stats.totalUsers}">1,280</div>
+                    </div>
+                    <div class="stat-icon bg-success bg-opacity-10 text-success"><i class="bi bi-people-fill"></i></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pending Hospital Verifications Card -->
+        <div class="card bdis-card border-0 shadow-sm mb-4" th:if="${!pendingHospitals.empty}">
+            <div class="bdis-card-header bg-warning bg-opacity-10 text-dark d-flex align-items-center justify-content-between">
+                <h5 class="fw-bold mb-0"><i class="bi bi-exclamation-triangle-fill text-warning me-2"></i> Pending Hospital Verifications (<span th:text="${pendingHospitals.size()}">1</span>)</h5>
+                <a th:href="@{/admin/hospitals}" class="btn btn-sm btn-dark">Manage All Hospitals</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-bdis table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Hospital Name</th>
+                            <th>License No.</th>
+                            <th>Location</th>
+                            <th>Contact Person</th>
+                            <th>Helpline</th>
+                            <th class="text-end">Verification Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="h : ${pendingHospitals}">
+                            <td class="fw-bold" th:text="${h.hospitalName}">City Care Blood Bank</td>
+                            <td><code th:text="${h.licenseNumber}">BB-OD-2026-99</code></td>
+                            <td th:text="${h.district.name} + ', ' + ${h.state.code}">Cuttack, OD</td>
+                            <td th:text="${h.contactPerson}">Dr. Soumya</td>
+                            <td th:text="${h.emergencyHelpline}">+91-671-2300777</td>
+                            <td class="text-end">
+                                <div class="d-flex justify-content-end gap-1">
+                                    <form th:action="@{/admin/hospitals/{id}/verify(id=${h.id})}" method="post">
+                                        <input type="hidden" name="approved" value="true">
+                                        <button type="submit" class="btn btn-sm btn-success fw-bold">
+                                            <i class="bi bi-check-lg"></i> Approve &amp; Activate
+                                        </button>
+                                    </form>
+                                    <form th:action="@{/admin/hospitals/{id}/verify(id=${h.id})}" method="post">
+                                        <input type="hidden" name="approved" value="false">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                                            <i class="bi bi-x-lg"></i> Reject
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Blood Stock Breakdown Chart & Low Stock Alerts -->
+        <div class="row g-4 mb-4">
+            <!-- Blood Group Stock Distribution -->
+            <div class="col-lg-7">
+                <div class="card bdis-card border-0 shadow-sm p-4 h-100">
+                    <h5 class="fw-bold mb-3 text-slate-800"><i class="bi bi-bar-chart-fill text-danger me-2"></i> Real-Time Units by Blood Group</h5>
+                    <div class="row g-3">
+                        <div class="col-sm-6 col-md-3" th:each="entry : ${stats.unitsByBloodGroup}">
+                            <div class="p-3 bg-light rounded-3 border text-center">
+                                <span class="bg-pill mb-2" th:text="${entry.key}">O+</span>
+                                <h4 class="fw-black text-dark mb-0" th:text="${entry.value}">85</h4>
+                                <span class="text-muted small">Total Units</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Critical Shortage Alerts -->
+            <div class="col-lg-5">
+                <div class="card bdis-card border-0 shadow-sm p-4 h-100">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <h5 class="fw-bold text-danger mb-0"><i class="bi bi-bell-fill me-2"></i> Low Stock Alerts</h5>
+                        <span class="badge bg-danger" th:text="${lowStockAlerts.size()} + ' Items'">0 Items</span>
+                    </div>
+                    <div class="d-flex flex-column gap-2" style="max-height: 280px; overflow-y: auto;">
+                        <div th:if="${lowStockAlerts.empty}" class="text-muted small text-center py-4">
+                            <i class="bi bi-shield-check text-success fs-2 d-block mb-1"></i>
+                            No critical stock shortages across connected blood centers.
+                        </div>
+                        <div class="p-2 bg-light rounded border d-flex align-items-center justify-content-between" th:each="alert : ${lowStockAlerts}">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="bg-pill bg-pill-sm" th:text="${alert.bloodGroupLabel}">O-</span>
+                                <div>
+                                    <div class="fw-bold small text-dark" th:text="${alert.hospitalName}">Apollo Center</div>
+                                    <div class="text-muted small" th:text="${alert.componentName}">Platelets</div>
+                                </div>
+                            </div>
+                            <span class="badge bg-warning text-dark fw-bold" th:text="${alert.unitsAvailable} + ' Units Left'">4 Left</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Audit Activity Log -->
+        <div class="card bdis-card border-0 shadow-sm p-4">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <h5 class="fw-bold mb-0 text-slate-800"><i class="bi bi-clock-history text-secondary me-2"></i> System-Wide Audit Activity Log</h5>
+                <a th:href="@{/admin/audit-logs}" class="btn btn-sm btn-outline-secondary">View Complete Audit Log</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-sm table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Timestamp</th>
+                            <th>Action Type</th>
+                            <th>Performed By</th>
+                            <th>Target Entity</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:if="${recentLogs.empty}">
+                            <td colspan="5" class="text-center py-3 text-muted">No audit logs recorded yet.</td>
+                        </tr>
+                        <tr th:each="log : ${recentLogs}">
+                            <td class="small text-muted" th:text="${#temporals.format(log.createdAt, 'dd MMM, hh:mm:ss a')}">Time</td>
+                            <td><span class="badge bg-light text-dark border" th:text="${log.action}">STOCK_UPDATE</span></td>
+                            <td class="small fw-semibold" th:text="${log.performedBy}">user@hospital.org</td>
+                            <td class="small text-muted" th:text="${log.entityName} + ':' + ${log.entityId}">BloodInventory:101</td>
+                            <td class="small text-slate-700" th:text="${log.details}">Stock adjusted</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+</html>

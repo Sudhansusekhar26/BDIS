@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Track Blood Dispatch')}"></head>
+<body class="bg-light">
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<main class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="card bdis-card shadow-lg border-0 p-4 mb-4">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 border-bottom pb-3 mb-4">
+                        <div>
+                            <div class="d-flex align-items-center gap-2 mb-1">
+                                <span class="badge bg-danger">Tracking ID #<span th:text="${bloodRequest.id}">101</span></span>
+                                <span th:class="'badge ' + ${bloodRequest.statusBadgeClass}" th:text="${bloodRequest.status.label}">In-Transit</span>
+                            </div>
+                            <h4 class="fw-bold text-slate-800 mb-0">Emergency Blood Transit Status</h4>
+                        </div>
+                        <div class="text-end">
+                            <span class="text-muted small d-block">Requested on</span>
+                            <span class="fw-semibold text-slate-700" th:text="${#temporals.format(bloodRequest.createdAt, 'dd MMM yyyy, hh:mm a')}">02 Oct 2026, 05:30 PM</span>
+                        </div>
+                    </div>
+
+                    <!-- Visual 4-Stage Stepper -->
+                    <div class="stepper-wrapper">
+                        <!-- Step 1: Requested -->
+                        <div th:class="'stepper-step ' + (${bloodRequest.status.stepIndex >= 1} ? 'completed' : '')">
+                            <div class="step-icon"><i class="bi bi-file-earmark-medical"></i></div>
+                            <div class="step-label">1. Requisition Placed</div>
+                        </div>
+
+                        <!-- Step 2: Accepted & Stock Reserved -->
+                        <div th:class="'stepper-step ' + (${bloodRequest.status.stepIndex > 2} ? 'completed' : (${bloodRequest.status.stepIndex == 2} ? 'active' : ''))">
+                            <div class="step-icon"><i class="bi bi-shield-check"></i></div>
+                            <div class="step-label">2. Stock Locked &amp; Verified</div>
+                        </div>
+
+                        <!-- Step 3: Dispatched / In-Transit -->
+                        <div th:class="'stepper-step ' + (${bloodRequest.status.stepIndex > 3} ? 'completed' : (${bloodRequest.status.stepIndex == 3} ? 'active' : ''))">
+                            <div class="step-icon"><i class="bi bi-truck"></i></div>
+                            <div class="step-label">3. In-Transit Courier</div>
+                        </div>
+
+                        <!-- Step 4: Delivered -->
+                        <div th:class="'stepper-step ' + (${bloodRequest.status.stepIndex == 4} ? 'completed' : '')">
+                            <div class="step-icon"><i class="bi bi-check2-circle"></i></div>
+                            <div class="step-label">4. Safely Delivered</div>
+                        </div>
+                    </div>
+
+                    <!-- Cancelled or Rejected notice if applicable -->
+                    <div th:if="${bloodRequest.status.name() == 'REJECTED'}" class="alert alert-danger my-3">
+                        <i class="bi bi-x-circle-fill me-2"></i> <strong>Requisition Rejected:</strong> <span th:text="${bloodRequest.rejectionReason}">Reason</span>
+                    </div>
+                    <div th:if="${bloodRequest.status.name() == 'CANCELLED'}" class="alert alert-secondary my-3">
+                        <i class="bi bi-slash-circle me-2"></i> This blood requisition was cancelled by the requester.
+                    </div>
+
+                    <!-- Detailed Info Cards Grid -->
+                    <div class="row g-4 mt-2">
+                        <!-- Patient & Requirement Info -->
+                        <div class="col-md-6">
+                            <div class="p-3 bg-light rounded-3 h-100 border">
+                                <h6 class="fw-bold text-danger mb-3 border-bottom pb-2"><i class="bi bi-person-wheelchair me-2"></i> Patient &amp; Blood Need</h6>
+                                <div class="d-flex align-items-center gap-3 mb-3">
+                                    <span class="bg-pill" th:text="${bloodRequest.bloodGroupLabel}">O+</span>
+                                    <div>
+                                        <h5 class="fw-bold mb-0 text-dark" th:text="${bloodRequest.patientName}">Patient Name</h5>
+                                        <div class="text-muted small" th:text="${bloodRequest.unitsRequested} + ' Units • ' + ${bloodRequest.componentName}">2 Units • Whole Blood</div>
+                                    </div>
+                                </div>
+                                <div class="small mb-2"><strong>Admitted At:</strong> <span th:text="${bloodRequest.admittedHospitalName}">Kalinga Hospital</span></div>
+                                <div class="small mb-2"><strong>Delivery Destination:</strong> <span th:text="${bloodRequest.deliveryAddress}">ICU Ward 3</span></div>
+                                <div class="small mb-2"><strong>Urgency Priority:</strong> <span class="badge bg-danger" th:text="${bloodRequest.urgencyLevel.label}">Emergency</span></div>
+                                <div th:if="${bloodRequest.prescriptionNotes}" class="small text-muted mt-2 p-2 bg-white rounded border">
+                                    <strong>Doctor Note:</strong> <span th:text="${bloodRequest.prescriptionNotes}">Clinical note</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Hospital Blood Center & Transit Courier Info -->
+                        <div class="col-md-6">
+                            <div class="p-3 bg-light rounded-3 h-100 border">
+                                <h6 class="fw-bold text-primary mb-3 border-bottom pb-2"><i class="bi bi-hospital me-2"></i> Dispatching Blood Bank</h6>
+                                <div class="fw-bold fs-6 text-dark" th:text="${bloodRequest.hospitalName}">Apollo Super Specialty Center</div>
+                                <div class="small text-muted mb-3" th:text="${bloodRequest.hospitalAddress}">Address</div>
+
+                                <div class="p-2 bg-white rounded border mb-3">
+                                    <div class="small text-muted">24x7 Hospital Emergency Contact</div>
+                                    <div class="fw-bold text-danger fs-5">
+                                        <i class="bi bi-telephone-fill me-1"></i>
+                                        <a th:href="'tel:' + ${bloodRequest.hospitalHelpline}" class="text-danger text-decoration-none" th:text="${bloodRequest.hospitalHelpline}">+91-674-6661066</a>
+                                    </div>
+                                </div>
+
+                                <!-- Transit Courier Info if Assigned -->
+                                <div th:if="${bloodRequest.deliveryPartnerName}" class="p-3 bg-white rounded border">
+                                    <h6 class="fw-bold text-success small mb-2"><i class="bi bi-truck me-1"></i> Live Transit Partner</h6>
+                                    <div class="small mb-1"><strong>Rider / Partner:</strong> <span th:text="${bloodRequest.deliveryPartnerName}">Ashok Kumar</span></div>
+                                    <div class="small mb-1"><strong>Rider Helpline:</strong> <a th:href="'tel:' + ${bloodRequest.deliveryContact}" class="text-decoration-none fw-bold" th:text="${bloodRequest.deliveryContact}">9876543210</a></div>
+                                    <div th:if="${bloodRequest.vehicleNumber}" class="small mb-1"><strong>Vehicle:</strong> <span th:text="${bloodRequest.vehicleNumber}">OD-02-AX-4512</span></div>
+                                    <div th:if="${bloodRequest.trackingNotes}" class="small text-muted mt-1"><strong>Notes:</strong> <span th:text="${bloodRequest.trackingNotes}">Temperature monitored at 4°C</span></div>
+                                    <div th:if="${bloodRequest.dispatchedAt}" class="small text-muted mt-1"><strong>Dispatched:</strong> <span th:text="${#temporals.format(bloodRequest.dispatchedAt, 'dd MMM, hh:mm a')}">Time</span></div>
+                                    <div th:if="${bloodRequest.deliveredAt}" class="small text-success fw-bold mt-1"><strong>Delivered:</strong> <span th:text="${#temporals.format(bloodRequest.deliveredAt, 'dd MMM, hh:mm a')}">Time</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
+                        <a th:href="@{/}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left me-1"></i> Back to Main Explorer</a>
+                        <button onclick="window.print()" class="btn btn-outline-dark btn-sm"><i class="bi bi-printer me-1"></i> Print Delivery Manifest</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+</html>

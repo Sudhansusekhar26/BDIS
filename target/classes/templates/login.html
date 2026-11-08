@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Sign In')}"></head>
+<body class="bg-light">
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<main class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-5">
+                <div class="card bdis-card shadow-lg border-0 p-3 p-md-4">
+                    <div class="text-center mb-4">
+                        <div class="d-inline-flex align-items-center justify-content-center bg-danger bg-opacity-10 text-danger p-3 rounded-circle mb-3">
+                            <i class="bi bi-shield-lock-fill fs-2"></i>
+                        </div>
+                        <h3 class="fw-bold text-slate-800">Welcome Back</h3>
+                        <p class="text-muted small">Sign in to your BDIS Blood Portal account</p>
+                    </div>
+
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+                    <!-- Spring Security Error / Logout Alerts -->
+                    <div th:if="${param.error}" class="alert alert-danger alert-dismissible fade show small" role="alert">
+                        <i class="bi bi-exclamation-circle-fill me-1"></i> Invalid email or password. Please try again.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+
+                    <div th:if="${param.logout}" class="alert alert-info alert-dismissible fade show small" role="alert">
+                        <i class="bi bi-info-circle-fill me-1"></i> You have been successfully signed out.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+
+                    <form th:action="@{/login}" method="post">
+                        <div class="mb-3">
+                            <label for="email" class="form-label fw-semibold small text-slate-700">Email Address</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="bi bi-envelope"></i></span>
+                                <input type="email" id="email" name="email" class="form-control" placeholder="name@domain.com" required autofocus>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="password" class="form-label fw-semibold small text-slate-700">Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="bi bi-key"></i></span>
+                                <input type="password" id="password" name="password" class="form-control" placeholder="••••••••" required>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-bdis-primary w-100 py-2 fw-bold mb-3">
+                            <i class="bi bi-box-arrow-in-right me-1"></i> Sign In to Portal
+                        </button>
+                    </form>
+
+                    <!-- Fast Demo Fill Section -->
+                    <div class="mt-3 p-3 bg-light rounded-3 border">
+                        <div class="small fw-bold text-muted mb-2 text-uppercase text-center">Quick Demo Logins</div>
+                        <div class="d-flex flex-column gap-2">
+                            <button type="button" class="btn btn-sm btn-outline-dark text-start" onclick="fillLogin('admin@bloodbank.org', 'Admin@123')">
+                                <i class="bi bi-shield-lock-fill text-danger me-1"></i> <strong>Admin:</strong> admin@bloodbank.org / Admin@123
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-dark text-start" onclick="fillLogin('apollo@hospital.org', 'Hospital@123')">
+                                <i class="bi bi-hospital-fill text-primary me-1"></i> <strong>Hospital (Apollo):</strong> apollo@hospital.org / Hospital@123
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-dark text-start" onclick="fillLogin('donor@gmail.com', 'User@123')">
+                                <i class="bi bi-person-fill text-success me-1"></i> <strong>Donor / Patient:</strong> donor@gmail.com / User@123
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-4 border-top pt-3 small text-muted">
+                        Don't have an account?
+                        <a th:href="@{/register}" class="fw-bold text-danger text-decoration-none ms-1">Create Account / Sign Up</a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<script>
+function fillLogin(email, pwd) {
+    document.getElementById('email').value = email;
+    document.getElementById('password').value = pwd;
+}
+</script>
+</body>
+</html>

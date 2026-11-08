@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('404 Page Not Found')}"></head>
+<body class="bg-light">
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<main class="py-5">
+    <div class="container text-center py-5">
+        <div class="d-inline-flex align-items-center justify-content-center bg-warning bg-opacity-10 text-warning p-4 rounded-circle mb-3">
+            <i class="bi bi-search fs-1"></i>
+        </div>
+        <h1 class="fw-black text-warning display-4">404</h1>
+        <h3 class="fw-bold text-slate-800 mb-2">Resource or Page Not Found</h3>
+        <p class="text-muted col-md-6 mx-auto mb-4" th:text="${errorMessage != null ? errorMessage : 'The requested blood requisition, hospital record, or URL path could not be located in the BDIS database.'}">
+            Resource not found.
+        </p>
+        <a th:href="@{/}" class="btn btn-danger px-4 fw-bold">
+            <i class="bi bi-house-door-fill me-1"></i> Return to Live Stock Explorer
+        </a>
+    </div>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+</html>

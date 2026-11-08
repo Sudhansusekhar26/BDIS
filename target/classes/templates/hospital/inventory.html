@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Blood Inventory Stock Manager')}"></head>
+<body class="bg-light">
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<main class="py-4">
+    <div class="container">
+        <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+        <!-- Header Card -->
+        <div class="card bdis-card border-0 shadow-sm p-4 mb-4 bg-white">
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                <div>
+                    <h4 class="fw-bold mb-1 text-slate-800"><i class="bi bi-boxes text-primary me-2"></i> Hospital Blood Inventory Control</h4>
+                    <p class="text-muted small mb-0">Add new batches, update units, monitor shelf-life expiry dates, and write off stock.</p>
+                </div>
+                <button type="button" class="btn btn-bdis-primary fw-bold" data-bs-toggle="modal" data-bs-target="#addStockModal">
+                    <i class="bi bi-plus-circle me-1"></i> Add / Replenish Blood Stock
+                </button>
+            </div>
+        </div>
+
+        <!-- Inventory Batches Table -->
+        <div class="card bdis-card border-0 shadow-sm">
+            <div class="table-responsive">
+                <table class="table table-bdis table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Group</th>
+                            <th>Component</th>
+                            <th>Batch Number</th>
+                            <th>Units Available</th>
+                            <th>Expiry Date</th>
+                            <th>Status</th>
+                            <th>Quick Units Adjust</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:if="${inventoryItems.empty}">
+                            <td colspan="8" class="text-center py-5 text-muted">
+                                <i class="bi bi-inbox fs-1 d-block mb-2 text-slate-300"></i>
+                                <h6 class="fw-bold">No Blood Batches In Inventory</h6>
+                                <p class="small mb-3">Click below to add your first stock batch.</p>
+                                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addStockModal">
+                                    Add Stock Batch
+                                </button>
+                            </td>
+                        </tr>
+
+                        <tr th:each="item : ${inventoryItems}">
+                            <td>
+                                <span class="bg-pill bg-pill-sm" th:text="${item.bloodGroupLabel}">O+</span>
+                            </td>
+                            <td>
+                                <div class="fw-bold text-dark" th:text="${item.componentName}">Whole Blood</div>
+                                <div class="small text-muted" th:text="'Updated: ' + ${#temporals.format(item.lastUpdated, 'dd MMM, hh:mm a')}">Date</div>
+                            </td>
+                            <td>
+                                <code class="fw-bold" th:text="${item.batchNumber}">BAT-001</code>
+                            </td>
+                            <td>
+                                <span class="fs-5 fw-bold text-dark" th:text="${item.unitsAvailable}">18</span>
+                                <span class="text-muted small">Units</span>
+                            </td>
+                            <td>
+                                <div th:if="${item.expiryDate != null}">
+                                    <span th:text="${#temporals.format(item.expiryDate, 'dd MMM yyyy')}">15 Nov 2026</span>
+                                    <div th:if="${item.expired}" class="text-danger small fw-bold">EXPIRED</div>
+                                </div>
+                                <span th:if="${item.expiryDate == null}" class="text-muted small">Standard Shelf Life</span>
+                            </td>
+                            <td>
+                                <span th:if="${item.unitsAvailable > 5}" class="badge stock-badge-high">In Stock</span>
+                                <span th:if="${item.unitsAvailable > 0 and item.unitsAvailable <= 5}" class="badge stock-badge-low">Low Stock</span>
+                                <span th:if="${item.unitsAvailable <= 0}" class="badge stock-badge-out">Depleted</span>
+                            </td>
+                            <td>
+                                <!-- Quick +/- Adjust Buttons -->
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <form th:action="@{/hospital/inventory/{id}/adjust(id=${item.id})}" method="post" class="d-inline">
+                                        <input type="hidden" name="delta" value="-1">
+                                        <button type="submit" class="btn btn-outline-secondary" th:disabled="${item.unitsAvailable <= 0}" title="Decrement 1 unit">-1</button>
+                                    </form>
+                                    <form th:action="@{/hospital/inventory/{id}/adjust(id=${item.id})}" method="post" class="d-inline">
+                                        <input type="hidden" name="delta" value="1">
+                                        <button type="submit" class="btn btn-outline-primary" title="Increment 1 unit">+1</button>
+                                    </form>
+                                    <form th:action="@{/hospital/inventory/{id}/adjust(id=${item.id})}" method="post" class="d-inline">
+                                        <input type="hidden" name="delta" value="5">
+                                        <button type="submit" class="btn btn-outline-success" title="Add 5 units">+5</button>
+                                    </form>
+                                </div>
+                            </td>
+                            <td class="text-end">
+                                <form th:action="@{/hospital/inventory/{id}/delete(id=${item.id})}" method="post" class="d-inline"
+                                      onsubmit="return confirm('Discard / write off this inventory batch?');">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Write Off / Delete Batch">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- Add / Replenish Stock Modal -->
+<div class="modal fade" id="addStockModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <form th:action="@{/hospital/inventory/add}" th:object="${stockDto}" method="post" class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title fw-bold"><i class="bi bi-plus-circle me-1"></i> Add / Replenish Blood Stock</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body row g-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold small">Blood Group <span class="text-danger">*</span></label>
+                    <select th:field="*{bloodGroup}" class="form-select" required>
+                        <option value="">-- Choose Blood Group --</option>
+                        <option th:each="bg : ${bloodGroups}" th:value="${bg}" th:text="${bg.label} + ' (' + ${bg.name()} + ')'">O+</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold small">Component Type <span class="text-danger">*</span></label>
+                    <select th:field="*{componentType}" class="form-select" required>
+                        <option th:each="comp : ${componentTypes}" th:value="${comp}" th:text="${comp.displayName}">Whole Blood</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold small">Total Units Available <span class="text-danger">*</span></label>
+                    <input type="number" th:field="*{unitsAvailable}" class="form-control" min="0" placeholder="10" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold small">Batch Number <span class="text-danger">*</span></label>
+                    <input type="text" th:field="*{batchNumber}" class="form-control" placeholder="e.g. BAT-2026-09" required>
+                </div>
+                <div class="col-12">
+                    <label class="form-label fw-semibold small">Batch Expiration Date</label>
+                    <input type="date" th:field="*{expiryDate}" class="form-control" th:min="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}">
+                    <div class="form-text small">Leave blank to automatically apply standard component shelf life.</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-bdis-primary fw-bold">Save Stock Batch</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+</html>

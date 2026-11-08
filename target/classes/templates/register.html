@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Sign Up - BDIS Portal')}"></head>
+<body class="bg-light">
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<main class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-9 col-xl-8">
+                <!-- Page Header -->
+                <div class="text-center mb-4">
+                    <div class="d-inline-flex align-items-center justify-content-center bg-danger bg-opacity-10 text-danger p-3 rounded-circle mb-3">
+                        <i class="bi bi-person-plus-fill fs-2"></i>
+                    </div>
+                    <h2 class="fw-bold text-slate-800">Create Your BDIS Account</h2>
+                    <p class="text-muted">Select your registration profile to access India's emergency blood donation &amp; inventory network.</p>
+                </div>
+
+                <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+                <!-- Interactive Profile / Role Switcher -->
+                <div class="row g-3 mb-4">
+                    <!-- Option 1: Individual Donor & Patient -->
+                    <div class="col-md-6">
+                        <div class="role-select-card h-100 p-3" id="cardDonorTab"
+                             th:classappend="${activeTab == 'user' or activeTab == null} ? 'active-user' : ''"
+                             onclick="switchRegistrationTab('user')">
+                            <div class="d-flex align-items-start gap-3">
+                                <div class="bg-danger bg-opacity-10 text-danger p-3 rounded-3 flex-shrink-0">
+                                    <i class="bi bi-heart-pulse-fill fs-3"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="d-flex align-items-center justify-content-between mb-1">
+                                        <h5 class="fw-bold mb-0 text-slate-800">Donor / Patient</h5>
+                                        <span class="badge bg-danger bg-opacity-10 text-danger small">Instant Access</span>
+                                    </div>
+                                    <p class="text-muted small mb-0">For individual citizens to pledge donations, request emergency blood, and track dispatches.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Option 2: Medical Center & Blood Bank -->
+                    <div class="col-md-6">
+                        <div class="role-select-card h-100 p-3" id="cardHospitalTab"
+                             th:classappend="${activeTab == 'hospital'} ? 'active-hospital' : ''"
+                             onclick="switchRegistrationTab('hospital')">
+                            <div class="d-flex align-items-start gap-3">
+                                <div class="bg-primary bg-opacity-10 text-primary p-3 rounded-3 flex-shrink-0">
+                                    <i class="bi bi-hospital-fill fs-3"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="d-flex align-items-center justify-content-between mb-1">
+                                        <h5 class="fw-bold mb-0 text-slate-800">Hospital / Blood Bank</h5>
+                                        <span class="badge bg-primary bg-opacity-10 text-primary small">Verification Req.</span>
+                                    </div>
+                                    <p class="text-muted small mb-0">For licensed hospitals &amp; storage facilities to manage live inventory and fulfill requisitions.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Registration Card Container -->
+                <div class="card bdis-card shadow-lg border-0 p-4 p-md-5">
+
+                    <!-- ==========================================
+                         FORM 1: Individual Donor / Patient Sign Up
+                         ========================================== -->
+                    <div id="donorFormContainer" th:style="${activeTab == 'hospital'} ? 'display:none;' : 'display:block;'">
+                        <div class="d-flex align-items-center justify-content-between mb-4 pb-2 border-bottom">
+                            <div>
+                                <h4 class="fw-bold text-danger mb-1"><i class="bi bi-person-circle me-2"></i>Donor &amp; Patient Registration</h4>
+                                <p class="text-muted small mb-0">Fill in your profile to connect with 24x7 blood units across India</p>
+                            </div>
+                            <span class="badge bg-danger-subtle text-danger px-3 py-2 fw-semibold"><i class="bi bi-shield-check me-1"></i>Secure Citizen Grid</span>
+                        </div>
+
+                        <form th:action="@{/register}" th:object="${userDto}" method="post" class="row g-3">
+                            <!-- Section 1: Account Credentials -->
+                            <div class="col-12">
+                                <div class="form-section-title text-danger">
+                                    <i class="bi bi-person-lines-fill"></i> 1. Personal &amp; Account Credentials
+                                </div>
+                            </div>
+
+                            <!-- Full Name -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold small">Full Legal Name <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="bi bi-person"></i></span>
+                                    <input type="text" th:field="*{name}" class="form-control" placeholder="e.g. Rahul Sharma" required>
+                                </div>
+                                <div class="text-danger small mt-1" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                            </div>
+
+                            <!-- Email Address -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold small">Email Address <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="bi bi-envelope"></i></span>
+                                    <input type="email" th:field="*{email}" class="form-control" placeholder="rahul@example.com" required>
+                                </div>
+                                <div class="text-danger small mt-1" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                            </div>
+
+                            <!-- Password -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold small">Account Password <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="bi bi-lock"></i></span>
+                                    <input type="password" th:field="*{password}" class="form-control" placeholder="Min. 6 characters" required>
+                                </div>
+                                <div class="text-danger small mt-1" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+                            </div>
+
+                            <!-- Phone Number -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold small">Mobile Phone Number <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="bi bi-telephone"></i></span>
+                                    <input type="tel" th:field="*{phone}" class="form-control" placeholder="+91-9876543210" required>
+                                </div>
+                                <div class="text-danger small mt-1" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
+                            </div>
+
+                            <!-- Section 2: Clinical & Location Details -->
+                            <div class="col-12 mt-4">
+                                <div class="form-section-title text-danger">
+                                    <i class="bi bi-geo-alt-fill"></i> 2. Clinical Profile &amp; Location
+                                </div>
+                            </div>
+
+                            <!-- Blood Group -->
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold small">Blood Group</label>
+                                <select th:field="*{bloodGroup}" class="form-select">
+                                    <option value="">-- Select Blood Group --</option>
+                                    <option th:each="bg : ${bloodGroups}" th:value="${bg}" th:text="${bg.label} + ' (' + ${bg.name()} + ')'">O+</option>
+                                </select>
+                            </div>
+
+                            <!-- State (Cascade Trigger) -->
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold small">State <span class="text-danger">*</span></label>
+                                <select th:field="*{stateId}" id="userStateSelect" class="form-select state-select-cascade" data-district-target="#userDistrictSelect" required>
+                                    <option value="">-- Select State --</option>
+                                    <option th:each="st : ${states}" th:value="${st.id}" th:text="${st.name}">Odisha</option>
+                                </select>
+                                <div class="text-danger small mt-1" th:if="${#fields.hasErrors('stateId')}" th:errors="*{stateId}"></div>
+                            </div>
+
+                            <!-- District (Cascaded) -->
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold small">District <span class="text-danger">*</span></label>
+                                <select th:field="*{districtId}" id="userDistrictSelect" class="form-select" th:data-preselected="*{districtId}" required>
+                                    <option value="">-- Select District --</option>
+                                </select>
+                                <div class="text-danger small mt-1" th:if="${#fields.hasErrors('districtId')}" th:errors="*{districtId}"></div>
+                            </div>
+
+                            <!-- Residential Address -->
+                            <div class="col-12">
+                                <label class="form-label fw-semibold small">Residential Address <span class="text-danger">*</span></label>
+                                <textarea th:field="*{address}" class="form-control" rows="2" placeholder="House/Flat number, Street name, Locality, City, PIN Code..." required></textarea>
+                                <div class="text-danger small mt-1" th:if="${#fields.hasErrors('address')}" th:errors="*{address}"></div>
+                            </div>
+
+                            <div class="col-12 pt-3">
+                                <button type="submit" class="btn btn-bdis-primary w-100 py-3 fw-bold fs-6 shadow-sm">
+                                    <i class="bi bi-check2-circle me-1"></i> Register as Donor / Patient
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- ==========================================
+                         FORM 2: Hospital / Blood Bank Onboarding
+                         ========================================== -->
+                    <div id="hospitalFormContainer" th:style="${activeTab == 'hospital'} ? 'display:block;' : 'display:none;'">
+                        <div class="d-flex align-items-center justify-content-between mb-4 pb-2 border-bottom">
+                            <div>
+                                <h4 class="fw-bold text-primary mb-1"><i class="bi bi-hospital me-2"></i>Hospital &amp; Blood Bank Enrollment</h4>
+                                <p class="text-muted small mb-0">Register your healthcare facility to broadcast blood stocks and process requisitions</p>
+                            </div>
+                            <span class="badge bg-primary-subtle text-primary px-3 py-2 fw-semibold"><i class="bi bi-building-check me-1"></i>Institutional Onboarding</span>
+                        </div>
+
+                        <div class="alert alert-primary d-flex align-items-center small py-2 mb-4" role="alert">
+                            <i class="bi bi-info-circle-fill fs-5 me-2 flex-shrink-0"></i>
+                            <div>Medical facility accounts undergo license verification by BDIS state administrators before live inventory broadcast is activated.</div>
+                        </div>
+
+                        <form th:action="@{/hospital/register}" th:object="${hospitalDto}" method="post" class="row g-3">
+                            <!-- Section 1: Facility Credentials -->
+                            <div class="col-12">
+                                <div class="form-section-title text-primary">
+                                    <i class="bi bi-building-gear"></i> 1. Medical Facility &amp; Authority Details
+                                </div>
+                            </div>
+
+                            <!-- Hospital Name -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold small">Hospital / Blood Center Name <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="bi bi-hospital"></i></span>
+                                    <input type="text" th:field="*{hospitalName}" class="form-control" placeholder="e.g. Apollo Super Specialty Blood Center" required>
+                                </div>
+                                <div class="text-danger small mt-1" th:if="${#fields.hasErrors('hospitalName')}" th:errors="*{hospitalName}"></div>
+                            </div>
+
+                            <!-- License Number -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold small">Medical License / Accreditation No. <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="bi bi-award"></i></span>
+                                    <input type="text" th:field="*{licenseNumber}" class="form-control" placeholder="e.g. BB-OD-2026-9812" required>
+                                </div>
+                                <div class="text-danger small mt-1" th:if="${#fields.hasErrors('licenseNumber')}" th:errors="*{licenseNumber}"></div>
+                            </div>
+
+                            <!-- Contact Person -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold small">In-Charge / Medical Superintendent Name <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="bi bi-person-badge"></i></span>
+                                    <input type="text" th:field="*{contactPerson}" class="form-control" placeholder="e.g. Dr. Siddharth Mohanty" required>
+                                </div>
+                                <div class="text-danger small mt-1" th:if="${#fields.hasErrors('contactPerson')}" th:errors="*{contactPerson}"></div>
+                            </div>
+
+                            <!-- Total Beds -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold small">Total Bed Capacity</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="bi bi-prescription2"></i></span>
+                                    <input type="number" th:field="*{totalBeds}" class="form-control" placeholder="e.g. 250" min="1">
+                                </div>
+                            </div>
+
+                            <!-- Section 2: Contact & Emergency Grid -->
+                            <div class="col-12 mt-4">
+                                <div class="form-section-title text-primary">
+                                    <i class="bi bi-telephone-plus-fill"></i> 2. Official Contact &amp; Emergency Grid
+                                </div>
+                            </div>
+
+                            <!-- Official Email -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold small">Official Email Address (Login ID) <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="bi bi-envelope-at"></i></span>
+                                    <input type="email" th:field="*{email}" class="form-control" placeholder="bloodcenter@apollo.org" required>
+                                </div>
+                                <div class="text-danger small mt-1" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                            </div>
+
+                            <!-- Password -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold small">Portal Access Password <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="bi bi-shield-lock"></i></span>
+                                    <input type="password" th:field="*{password}" class="form-control" placeholder="Min. 6 characters" required>
+                                </div>
+                                <div class="text-danger small mt-1" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+                            </div>
+
+                            <!-- Desk Phone -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold small">Administrative Desk Phone <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="bi bi-telephone"></i></span>
+                                    <input type="tel" th:field="*{phone}" class="form-control" placeholder="+91-674-6661000" required>
+                                </div>
+                                <div class="text-danger small mt-1" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
+                            </div>
+
+                            <!-- Emergency Helpline -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold small">24x7 Emergency Helpline Number <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="bi bi-headset"></i></span>
+                                    <input type="tel" th:field="*{emergencyHelpline}" class="form-control" placeholder="+91-674-6661066" required>
+                                </div>
+                                <div class="text-danger small mt-1" th:if="${#fields.hasErrors('emergencyHelpline')}" th:errors="*{emergencyHelpline}"></div>
+                            </div>
+
+                            <!-- Section 3: Facility Location -->
+                            <div class="col-12 mt-4">
+                                <div class="form-section-title text-primary">
+                                    <i class="bi bi-geo-alt-fill"></i> 3. Facility Location
+                                </div>
+                            </div>
+
+                            <!-- State (Cascade Trigger) -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold small">State <span class="text-danger">*</span></label>
+                                <select th:field="*{stateId}" id="hospStateSelect" class="form-select state-select-cascade" data-district-target="#hospDistrictSelect" required>
+                                    <option value="">-- Select State --</option>
+                                    <option th:each="st : ${states}" th:value="${st.id}" th:text="${st.name}">Odisha</option>
+                                </select>
+                                <div class="text-danger small mt-1" th:if="${#fields.hasErrors('stateId')}" th:errors="*{stateId}"></div>
+                            </div>
+
+                            <!-- District (Cascaded) -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold small">District <span class="text-danger">*</span></label>
+                                <select th:field="*{districtId}" id="hospDistrictSelect" class="form-select" th:data-preselected="*{districtId}" required>
+                                    <option value="">-- Select District --</option>
+                                </select>
+                                <div class="text-danger small mt-1" th:if="${#fields.hasErrors('districtId')}" th:errors="*{districtId}"></div>
+                            </div>
+
+                            <!-- Hospital Campus Address -->
+                            <div class="col-12">
+                                <label class="form-label fw-semibold small">Complete Campus / Medical Building Address <span class="text-danger">*</span></label>
+                                <textarea th:field="*{address}" class="form-control" rows="2" placeholder="Building, plot number, street, city, landmark, PIN code..." required></textarea>
+                                <div class="text-danger small mt-1" th:if="${#fields.hasErrors('address')}" th:errors="*{address}"></div>
+                            </div>
+
+                            <div class="col-12 mt-3">
+                                <div class="form-check small text-muted">
+                                    <input class="form-check-input" type="checkbox" id="termsCheck" required checked>
+                                    <label class="form-check-label" for="termsCheck">
+                                        I certify that all medical license details provided are authentic and comply with the Drugs and Cosmetics Act and National Blood Policy regulations.
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="col-12 pt-2">
+                                <button type="submit" class="btn btn-primary w-100 py-3 fw-bold fs-6 shadow-sm">
+                                    <i class="bi bi-shield-check me-1"></i> Submit Hospital for Verification
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Bottom Sign In redirect -->
+                    <div class="text-center mt-4 border-top pt-3 small text-muted">
+                        Already registered with BDIS? <a th:href="@{/login}" class="fw-bold text-danger text-decoration-none">Sign In to Your Account</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<script>
+function switchRegistrationTab(tab) {
+    const cardDonor = document.getElementById('cardDonorTab');
+    const cardHosp = document.getElementById('cardHospitalTab');
+    const donorForm = document.getElementById('donorFormContainer');
+    const hospForm = document.getElementById('hospitalFormContainer');
+
+    if (tab === 'hospital') {
+        cardDonor.classList.remove('active-user');
+        cardHosp.classList.add('active-hospital');
+        donorForm.style.display = 'none';
+        hospForm.style.display = 'block';
+    } else {
+        cardHosp.classList.remove('active-hospital');
+        cardDonor.classList.add('active-user');
+        hospForm.style.display = 'none';
+        donorForm.style.display = 'block';
+    }
+
+    if (window.history.replaceState) {
+        const url = new URL(window.location);
+        url.searchParams.set('type', tab);
+        window.history.replaceState({}, '', url);
+    }
+}
+</script>
+</body>
+</html>

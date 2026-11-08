@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Hospital & Blood Bank Onboarding')}"></head>
+<body class="bg-light">
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<main class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card bdis-card shadow-lg border-0 p-4">
+                    <div class="text-center mb-4">
+                        <div class="d-inline-flex align-items-center justify-content-center bg-primary bg-opacity-10 text-primary p-3 rounded-circle mb-3">
+                            <i class="bi bi-hospital-fill fs-2"></i>
+                        </div>
+                        <h3 class="fw-bold text-slate-800">Hospital &amp; Blood Bank Enrollment</h3>
+                        <p class="text-muted small">Register your licensed medical center to integrate inventory into the BDIS emergency grid.</p>
+                    </div>
+
+                    <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+                    <form th:action="@{/hospital/register}" th:object="${hospitalDto}" method="post" class="row g-3">
+                        <!-- Hospital Name -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold small">Hospital / Blood Bank Name <span class="text-danger">*</span></label>
+                            <input type="text" th:field="*{hospitalName}" class="form-control" placeholder="e.g. Apollo Super Specialty Blood Center" required>
+                            <div class="text-danger small" th:if="${#fields.hasErrors('hospitalName')}" th:errors="*{hospitalName}"></div>
+                        </div>
+
+                        <!-- License Number -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold small">Medical License / Accreditation No. <span class="text-danger">*</span></label>
+                            <input type="text" th:field="*{licenseNumber}" class="form-control" placeholder="e.g. BB-OD-2026-9812" required>
+                            <div class="text-danger small" th:if="${#fields.hasErrors('licenseNumber')}" th:errors="*{licenseNumber}"></div>
+                        </div>
+
+                        <!-- Contact Person -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold small">In-Charge / Medical Officer Name <span class="text-danger">*</span></label>
+                            <input type="text" th:field="*{contactPerson}" class="form-control" placeholder="e.g. Dr. Siddharth Mohanty" required>
+                            <div class="text-danger small" th:if="${#fields.hasErrors('contactPerson')}" th:errors="*{contactPerson}"></div>
+                        </div>
+
+                        <!-- Official Email -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold small">Official Email Address (Login ID) <span class="text-danger">*</span></label>
+                            <input type="email" th:field="*{email}" class="form-control" placeholder="bloodcenter@apollo.org" required>
+                            <div class="text-danger small" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                        </div>
+
+                        <!-- Password -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold small">Portal Password <span class="text-danger">*</span></label>
+                            <input type="password" th:field="*{password}" class="form-control" placeholder="••••••••" required>
+                            <div class="text-danger small" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+                        </div>
+
+                        <!-- Contact Phone -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold small">Administrative Desk Phone <span class="text-danger">*</span></label>
+                            <input type="tel" th:field="*{phone}" class="form-control" placeholder="+91-674-6661000" required>
+                            <div class="text-danger small" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
+                        </div>
+
+                        <!-- Emergency Helpline -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold small">24x7 Emergency Helpline Number <span class="text-danger">*</span></label>
+                            <input type="tel" th:field="*{emergencyHelpline}" class="form-control" placeholder="+91-674-6661066" required>
+                            <div class="text-danger small" th:if="${#fields.hasErrors('emergencyHelpline')}" th:errors="*{emergencyHelpline}"></div>
+                        </div>
+
+                        <!-- Bed Capacity -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold small">Bed Capacity (Estimated)</label>
+                            <input type="number" th:field="*{totalBeds}" class="form-control" placeholder="250">
+                        </div>
+
+                        <!-- State (Cascade Trigger) -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold small">State <span class="text-danger">*</span></label>
+                            <select th:field="*{stateId}" id="hospStateSelect" class="form-select state-select-cascade" data-district-target="#hospDistrictSelect" required>
+                                <option value="">-- Select State --</option>
+                                <option th:each="st : ${states}" th:value="${st.id}" th:text="${st.name}">Odisha</option>
+                            </select>
+                            <div class="text-danger small" th:if="${#fields.hasErrors('stateId')}" th:errors="*{stateId}"></div>
+                        </div>
+
+                        <!-- District (Cascaded) -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold small">District <span class="text-danger">*</span></label>
+                            <select th:field="*{districtId}" id="hospDistrictSelect" class="form-select" th:data-preselected="*{districtId}" required>
+                                <option value="">-- Select District --</option>
+                            </select>
+                            <div class="text-danger small" th:if="${#fields.hasErrors('districtId')}" th:errors="*{districtId}"></div>
+                        </div>
+
+                        <!-- Address -->
+                        <div class="col-12">
+                            <label class="form-label fw-semibold small">Complete Hospital Campus Address <span class="text-danger">*</span></label>
+                            <textarea th:field="*{address}" class="form-control" rows="2" placeholder="Building, plot number, street, pincode..." required></textarea>
+                            <div class="text-danger small" th:if="${#fields.hasErrors('address')}" th:errors="*{address}"></div>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="form-check small text-muted">
+                                <input class="form-check-input" type="checkbox" id="termsCheck" required checked>
+                                <label class="form-check-label" for="termsCheck">
+                                    I certify that all medical license details provided are authentic and comply with Drugs and Cosmetics Act regulations.
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="col-12 pt-2">
+                            <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">
+                                <i class="bi bi-shield-check me-1"></i> Submit Hospital for Verification
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="text-center mt-4 border-top pt-3 small text-muted">
+                        Already enrolled? <a th:href="@{/login}" class="fw-bold text-primary text-decoration-none">Sign In to Dashboard</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+</html>

@@ -1,0 +1,394 @@
+/* ===================================================================
+   BDIS - Blood Donation & Inventory Control System Custom Stylesheet
+   Modern Medical Grade Dark/Light UI with Crimson & Indigo Palette
+   =================================================================== */
+
+:root {
+    --bdis-primary: #dc2626;       /* Vibrant Crimson Blood Red */
+    --bdis-primary-dark: #991b1b;  /* Deep Arterial Red */
+    --bdis-primary-light: #fee2e2; /* Soft Rose Tint */
+    --bdis-secondary: #0f172a;     /* Deep Navy Slate */
+    --bdis-accent: #0284c7;        /* Medical Sky Blue */
+    --bdis-success: #16a34a;       /* Life Green */
+    --bdis-warning: #ea580c;       /* Amber Urgent */
+    --bdis-danger: #e11d48;        /* Emergency Rose */
+    --bdis-card-bg: #ffffff;
+    --bdis-body-bg: #f8fafc;
+    --bdis-text-main: #1e293b;
+    --bdis-text-muted: #64748b;
+    --bdis-border: #e2e8f0;
+    --bdis-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --bdis-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+    --bdis-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+    --bdis-shadow-glow: 0 0 20px rgba(220, 38, 38, 0.25);
+}
+
+body {
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: var(--bdis-body-bg);
+    color: var(--bdis-text-main);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1 0 auto;
+}
+
+/* Navbar */
+.navbar-bdis {
+    background-color: #ffffff;
+    border-bottom: 1px solid var(--bdis-border);
+    box-shadow: var(--bdis-shadow-sm);
+}
+
+.navbar-brand-bdis {
+    font-weight: 800;
+    font-size: 1.35rem;
+    color: var(--bdis-primary) !important;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    letter-spacing: -0.02em;
+}
+
+.brand-badge {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.5rem;
+    background-color: var(--bdis-primary-light);
+    color: var(--bdis-primary-dark);
+    border-radius: 9999px;
+    font-weight: 700;
+}
+
+/* Hero Section */
+.hero-banner {
+    background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 60%, #450a0a 100%);
+    color: #ffffff;
+    padding: 4.5rem 0 3.5rem 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-banner::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(220,38,38,0.18) 0%, rgba(220,38,38,0) 70%);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.hero-title {
+    font-weight: 900;
+    font-size: 2.8rem;
+    line-height: 1.15;
+    letter-spacing: -0.03em;
+}
+
+.hero-highlight {
+    background: linear-gradient(90deg, #f87171, #fca5a5);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Blood Drop Animation */
+.blood-drop-icon {
+    display: inline-block;
+    color: var(--bdis-primary);
+    animation: bloodPulse 2s infinite ease-in-out;
+}
+
+@keyframes bloodPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.12); }
+}
+
+/* Cards & Containers */
+.bdis-card {
+    background: var(--bdis-card-bg);
+    border: 1px solid var(--bdis-border);
+    border-radius: 1rem;
+    box-shadow: var(--bdis-shadow-sm);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.bdis-card:hover {
+    box-shadow: var(--bdis-shadow-md);
+}
+
+.bdis-card-header {
+    background: transparent;
+    border-bottom: 1px solid var(--bdis-border);
+    padding: 1.25rem 1.5rem;
+    font-weight: 700;
+}
+
+/* Blood Group Badges */
+.bg-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    font-weight: 800;
+    font-size: 1.05rem;
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+    color: var(--bdis-primary-dark);
+    border: 2px solid #f87171;
+    box-shadow: 0 2px 4px rgba(220, 38, 38, 0.15);
+}
+
+.bg-pill-sm {
+    width: 34px;
+    height: 34px;
+    font-size: 0.85rem;
+    border-width: 1.5px;
+}
+
+/* Buttons */
+.btn-bdis-primary {
+    background-color: var(--bdis-primary);
+    border-color: var(--bdis-primary);
+    color: #ffffff;
+    font-weight: 600;
+    border-radius: 0.6rem;
+    padding: 0.6rem 1.25rem;
+    transition: all 0.2s ease;
+}
+
+.btn-bdis-primary:hover {
+    background-color: var(--bdis-primary-dark);
+    border-color: var(--bdis-primary-dark);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.35);
+}
+
+.btn-bdis-emergency {
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+    color: #ffffff;
+    font-weight: 700;
+    border: none;
+    animation: emergencyGlow 2.5s infinite;
+}
+
+@keyframes emergencyGlow {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.4); }
+    50% { box-shadow: 0 0 0 10px rgba(220, 38, 38, 0); }
+}
+
+/* Tracking Stepper */
+.stepper-wrapper {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    margin: 2rem 0;
+}
+
+.stepper-wrapper::before {
+    content: '';
+    position: absolute;
+    top: 24px;
+    left: 40px;
+    right: 40px;
+    height: 4px;
+    background-color: #e2e8f0;
+    z-index: 1;
+}
+
+.stepper-step {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+}
+
+.step-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-color: #ffffff;
+    border: 3px solid #cbd5e1;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+}
+
+.step-label {
+    margin-top: 0.75rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #64748b;
+    text-align: center;
+}
+
+.stepper-step.completed .step-icon {
+    background-color: #16a34a;
+    border-color: #16a34a;
+    color: #ffffff;
+}
+
+.stepper-step.completed .step-label {
+    color: #16a34a;
+}
+
+.stepper-step.active .step-icon {
+    background-color: #0284c7;
+    border-color: #0284c7;
+    color: #ffffff;
+    box-shadow: 0 0 0 6px rgba(2, 132, 199, 0.2);
+}
+
+.stepper-step.active .step-label {
+    color: #0284c7;
+    font-weight: 700;
+}
+
+.stepper-step.cancelled .step-icon {
+    background-color: #ef4444;
+    border-color: #ef4444;
+    color: #ffffff;
+}
+
+/* Stat Widgets */
+.stat-widget {
+    padding: 1.5rem;
+    border-radius: 1rem;
+    background: #ffffff;
+    border: 1px solid var(--bdis-border);
+}
+
+.stat-value {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: var(--bdis-secondary);
+    line-height: 1;
+    margin: 0.5rem 0;
+}
+
+.stat-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--bdis-text-muted);
+}
+
+.stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+/* Stock Status Indicators */
+.stock-badge-high {
+    background-color: #dcfce7;
+    color: #15803d;
+    font-weight: 700;
+}
+
+.stock-badge-low {
+    background-color: #fef9c3;
+    color: #a16207;
+    font-weight: 700;
+}
+
+.stock-badge-out {
+    background-color: #fee2e2;
+    color: #b91c1c;
+    font-weight: 700;
+}
+
+/* Tables */
+.table-bdis {
+    vertical-align: middle;
+}
+
+.table-bdis thead th {
+    background-color: #f1f5f9;
+    color: #475569;
+    font-weight: 700;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 2px solid var(--bdis-border);
+}
+
+/* Auth & Role Switcher Styles */
+.role-select-card {
+    cursor: pointer;
+    border: 2px solid var(--bdis-border);
+    border-radius: 1rem;
+    padding: 1.25rem;
+    background: #ffffff;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.role-select-card:hover {
+    border-color: #cbd5e1;
+    transform: translateY(-2px);
+    box-shadow: var(--bdis-shadow-md);
+}
+
+.role-select-card.active-user {
+    border-color: var(--bdis-primary);
+    background: linear-gradient(180deg, #fff5f5 0%, #ffffff 100%);
+    box-shadow: 0 4px 14px rgba(220, 38, 38, 0.15);
+}
+
+.role-select-card.active-hospital {
+    border-color: var(--bdis-accent);
+    background: linear-gradient(180deg, #f0f9ff 0%, #ffffff 100%);
+    box-shadow: 0 4px 14px rgba(2, 132, 199, 0.15);
+}
+
+.form-section-title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--bdis-text-muted);
+    border-bottom: 1px solid var(--bdis-border);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Footer */
+.footer-bdis {
+    background-color: #0f172a;
+    color: #94a3b8;
+    padding: 3rem 0 1.5rem 0;
+    border-top: 1px solid #1e293b;
+}
+
+.footer-bdis a {
+    color: #cbd5e1;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.footer-bdis a:hover {
+    color: #ffffff;
+}
+
+

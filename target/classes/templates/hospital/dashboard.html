@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Hospital Command Dashboard')}"></head>
+<body class="bg-light">
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<main class="py-4">
+    <div class="container">
+        <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+        <!-- Hospital Identity Card -->
+        <div class="card bdis-card border-0 shadow-sm p-4 mb-4 bg-white">
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="bg-primary text-white p-3 rounded-circle fs-3"><i class="bi bi-hospital"></i></div>
+                    <div>
+                        <div class="d-flex align-items-center gap-2">
+                            <h4 class="fw-bold mb-0 text-dark" th:text="${hospital.hospitalName}">Apollo Super Specialty Center</h4>
+                            <span class="badge bg-success"><i class="bi bi-shield-check me-1"></i> Verified Licensed Bank</span>
+                        </div>
+                        <p class="text-muted small mb-0 mt-1">
+                            License: <code th:text="${hospital.licenseNumber}">BB-OD-2024-001</code> •
+                            Helpline: <strong class="text-danger" th:text="${hospital.emergencyHelpline}">+91-674-6661066</strong> •
+                            In-Charge: <span th:text="${hospital.contactPerson}">Dr. Siddharth</span>
+                        </p>
+                    </div>
+                </div>
+                <div class="d-flex gap-2">
+                    <a th:href="@{/hospital/inventory}" class="btn btn-outline-primary fw-semibold">
+                        <i class="bi bi-boxes me-1"></i> Manage Stock
+                    </a>
+                    <a th:href="@{/hospital/requests}" class="btn btn-danger fw-bold">
+                        <i class="bi bi-inbox-fill me-1"></i> Inbound Requests (<span th:text="${stats.pendingRequests}">0</span>)
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Metric Stat Cards -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-3">
+                <div class="stat-widget d-flex align-items-center justify-content-between shadow-sm">
+                    <div>
+                        <div class="stat-label">Total Stock In Bank</div>
+                        <div class="stat-value text-primary" th:text="${stats.totalAvailableUnits}">250</div>
+                    </div>
+                    <div class="stat-icon bg-primary bg-opacity-10 text-primary"><i class="bi bi-droplet-fill"></i></div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-widget d-flex align-items-center justify-content-between shadow-sm">
+                    <div>
+                        <div class="stat-label">Inbound Pending</div>
+                        <div class="stat-value text-danger" th:text="${stats.pendingRequests}">1</div>
+                    </div>
+                    <div class="stat-icon bg-danger bg-opacity-10 text-danger"><i class="bi bi-hourglass-top"></i></div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-widget d-flex align-items-center justify-content-between shadow-sm">
+                    <div>
+                        <div class="stat-label">Active Dispatches</div>
+                        <div class="stat-value text-warning" th:text="${stats.activeDispatches}">1</div>
+                    </div>
+                    <div class="stat-icon bg-warning bg-opacity-10 text-warning"><i class="bi bi-truck"></i></div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-widget d-flex align-items-center justify-content-between shadow-sm">
+                    <div>
+                        <div class="stat-label">Delivered Orders</div>
+                        <div class="stat-value text-success" th:text="${stats.completedDeliveries}">5</div>
+                    </div>
+                    <div class="stat-icon bg-success bg-opacity-10 text-success"><i class="bi bi-check-circle-fill"></i></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Inbound Urgent Requests Table -->
+        <div class="card bdis-card border-0 shadow-sm mb-4">
+            <div class="bdis-card-header bg-white d-flex align-items-center justify-content-between">
+                <h5 class="fw-bold mb-0 text-danger"><i class="bi bi-inbox-fill me-2"></i> Inbound Urgent Blood Requisitions</h5>
+                <a th:href="@{/hospital/requests}" class="btn btn-sm btn-outline-danger">View Request Pipeline</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-bdis table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Patient Name</th>
+                            <th>Admitted Hospital</th>
+                            <th>Group &amp; Component</th>
+                            <th>Units</th>
+                            <th>Urgency</th>
+                            <th>Destination Address</th>
+                            <th class="text-end">Quick Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:if="${pendingRequests.empty}">
+                            <td colspan="8" class="text-center py-4 text-muted">
+                                <i class="bi bi-check2-all fs-2 d-block text-success mb-1"></i>
+                                No pending inbound blood requests! All requisitions have been processed.
+                            </td>
+                        </tr>
+                        <tr th:each="req : ${pendingRequests}">
+                            <td class="fw-bold" th:text="'#' + ${req.id}">#1</td>
+                            <td class="fw-bold" th:text="${req.patientName}">Sunita Sharma</td>
+                            <td th:text="${req.admittedHospitalName}">Kalinga Hospital</td>
+                            <td>
+                                <span class="bg-pill bg-pill-sm me-1" th:text="${req.bloodGroupLabel}">O+</span>
+                                <span class="fw-semibold" th:text="${req.componentName}">Whole Blood</span>
+                            </td>
+                            <td class="fw-bold" th:text="${req.unitsRequested}">2</td>
+                            <td>
+                                <span th:class="'badge ' + (${req.urgencyLevel.name() == 'EMERGENCY'} ? 'bg-danger' : 'bg-warning text-dark')"
+                                      th:text="${req.urgencyLevel.label}">Emergency</span>
+                            </td>
+                            <td class="small text-truncate" style="max-width: 180px;" th:text="${req.deliveryAddress}">ICU Ward 3</td>
+                            <td class="text-end">
+                                <div class="d-flex justify-content-end gap-1">
+                                    <form th:action="@{/hospital/requests/{id}/accept(id=${req.id})}" method="post">
+                                        <button type="submit" class="btn btn-sm btn-success fw-bold"
+                                                onclick="return confirm('Accept this request? Required units will be atomically deducted from your stock.');">
+                                            <i class="bi bi-check2"></i> Accept
+                                        </button>
+                                    </form>
+                                    <button type="button" class="btn btn-sm btn-outline-danger"
+                                            data-bs-toggle="modal" data-bs-target="#rejectModal"
+                                            th:data-request-id="${req.id}">
+                                        <i class="bi bi-x"></i> Reject
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Blood Stock Availability Matrix Grid -->
+        <div class="card bdis-card border-0 shadow-sm p-4">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <h5 class="fw-bold mb-0 text-slate-800"><i class="bi bi-pie-chart-fill me-2 text-primary"></i> Current Blood Group Inventory Summary</h5>
+                <a th:href="@{/hospital/inventory}" class="btn btn-sm btn-primary">Open Stock Editor</a>
+            </div>
+            <div class="row g-3">
+                <div class="col-sm-6 col-md-3" th:each="entry : ${stats.unitsByBloodGroup}">
+                    <div class="p-3 bg-light rounded-3 border d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center gap-3">
+                            <span class="bg-pill" th:text="${entry.key}">O+</span>
+                            <div>
+                                <div class="small text-muted fw-semibold">Units In Stock</div>
+                                <h4 class="fw-black mb-0 text-dark" th:text="${entry.value}">18</h4>
+                            </div>
+                        </div>
+                        <span th:if="${entry.value > 5}" class="badge bg-success">Healthy</span>
+                        <span th:if="${entry.value > 0 and entry.value <= 5}" class="badge bg-warning text-dark">Low</span>
+                        <span th:if="${entry.value == 0}" class="badge bg-danger">Empty</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- Reject Requisition Modal -->
+<div class="modal fade" id="rejectModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <form id="rejectForm" method="post" class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title fw-bold">Reject Requisition <span id="rejectModalReqId"></span></h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p class="small text-muted">Please provide a clinical or logistical reason for rejecting this blood requisition.</p>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold small">Reason for Rejection</label>
+                    <textarea name="reason" class="form-control" rows="3" placeholder="e.g. Insufficient specific cross-match units / Hospital internal consumption reserve..." required></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-danger fw-bold">Confirm Rejection</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+</html>

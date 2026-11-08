@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Hospital Verification Pending')}"></head>
+<body class="bg-light">
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<main class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-7 text-center">
+                <div class="card bdis-card shadow-lg border-0 p-5">
+                    <div class="d-inline-flex align-items-center justify-content-center bg-warning bg-opacity-10 text-warning p-4 rounded-circle mb-3 mx-auto" style="width: 90px; height: 90px;">
+                        <i class="bi bi-hourglass-split fs-1"></i>
+                    </div>
+                    <h3 class="fw-bold text-slate-800 mb-2">Hospital Verification Under Review</h3>
+                    <p class="text-muted mb-4">
+                        Thank you for enrolling <strong th:text="${hospital.hospitalName}">Hospital Name</strong> (License: <code th:text="${hospital.licenseNumber}">BB-OD-2026</code>).
+                        Your medical license and transfusion facilities are currently being audited by the Central State Blood Transfusion Authority.
+                    </p>
+                    <div class="p-3 bg-light rounded-3 text-start small mb-4 border">
+                        <div class="fw-bold mb-1 text-dark"><i class="bi bi-shield-lock me-1 text-primary"></i> Verification Criteria:</div>
+                        <ul class="mb-0 text-muted ps-3">
+                            <li>Valid Drug Controller General of India (DCGI) Blood Bank License.</li>
+                            <li>Component separation facility inspection and cold chain compliance.</li>
+                            <li>24x7 helpline responsiveness verification.</li>
+                        </ul>
+                    </div>
+                    <div class="d-flex justify-content-center gap-3">
+                        <a th:href="@{/}" class="btn btn-outline-secondary px-4">Return Home</a>
+                        <form th:action="@{/logout}" method="post">
+                            <button type="submit" class="btn btn-danger px-4">Sign Out</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+</html>

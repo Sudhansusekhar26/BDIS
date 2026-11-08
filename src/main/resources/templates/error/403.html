@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('403 Forbidden Access')}"></head>
+<body class="bg-light">
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<main class="py-5">
+    <div class="container text-center py-5">
+        <div class="d-inline-flex align-items-center justify-content-center bg-danger bg-opacity-10 text-danger p-4 rounded-circle mb-3">
+            <i class="bi bi-shield-x fs-1"></i>
+        </div>
+        <h1 class="fw-black text-danger display-4">403</h1>
+        <h3 class="fw-bold text-slate-800 mb-2">Access Restricted / Unauthorized</h3>
+        <p class="text-muted col-md-6 mx-auto mb-4" th:text="${errorMessage != null ? errorMessage : 'You do not have the necessary security role privileges to access this hospital or administrative resource.'}">
+            Access denied.
+        </p>
+        <div class="d-flex justify-content-center gap-3">
+            <a th:href="@{/}" class="btn btn-outline-secondary px-4">Return to Public Portal</a>
+            <a th:href="@{/login}" class="btn btn-danger px-4">Sign In with Authorized Account</a>
+        </div>
+    </div>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+</html>
